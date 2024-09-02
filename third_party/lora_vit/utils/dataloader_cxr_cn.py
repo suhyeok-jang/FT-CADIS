@@ -20,8 +20,12 @@ class GraphDataset(Dataset):
                 cases = cases + [f"{data_path}/CXR_png/{case}"]
                 labels.append(int(case.split("_")[-1].split(".")[0]))
 
-        train_cases, test_cases, train_labels, test_labels = train_test_split(cases, labels, test_size=0.2, shuffle=True, random_state=42)
-        test_cases, val_cases, test_labels, val_labels = train_test_split(test_cases, test_labels, test_size=0.5, shuffle=True, random_state=42)
+        train_cases, test_cases, train_labels, test_labels = train_test_split(
+            cases, labels, test_size=0.2, shuffle=True, random_state=42
+        )
+        test_cases, val_cases, test_labels, val_labels = train_test_split(
+            test_cases, test_labels, test_size=0.5, shuffle=True, random_state=42
+        )
 
         if data_type == "train":
             self.cases = np.array(train_cases)
@@ -45,14 +49,14 @@ class GraphDataset(Dataset):
         normalize = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         random_flip = RandomHorizontalFlip(p=0.5)
         image = np.array(Image.open(self.cases[idx]).convert("RGB")).astype(np.float32) / 255.0
-        image = rearrange(torch.tensor(image, dtype=torch.float32), 'h w c -> c h w')
+        image = rearrange(torch.tensor(image, dtype=torch.float32), "h w c -> c h w")
         image = resize(image)
         image = normalize(image)
         image = random_flip(image)
-        
+
         label = self.labels[idx]
         label = torch.tensor(label, dtype=torch.long)
-        
+
         return image, label
 
 
@@ -64,7 +68,7 @@ def cxrDataloader(cfg):
         num_workers=cfg.num_workers,
         drop_last=True,
     )
-    
+
     val_set = DataLoader(
         GraphDataset(data_type="val", fold_idx=cfg.fold, data_path=cfg.data_path),
         batch_size=cfg.bs,
@@ -82,4 +86,3 @@ def cxrDataloader(cfg):
     )
 
     return train_set, val_set, test_set
-

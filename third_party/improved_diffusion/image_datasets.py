@@ -5,9 +5,7 @@ import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
 
-def load_data(
-    *, data_dir, batch_size, image_size, class_cond=False, deterministic=False
-):
+def load_data(*, data_dir, batch_size, image_size, class_cond=False, deterministic=False):
     """
     For a dataset, create a generator over (images, kwargs) pairs.
 
@@ -42,13 +40,9 @@ def load_data(
         num_shards=MPI.COMM_WORLD.Get_size(),
     )
     if deterministic:
-        loader = DataLoader(
-            dataset, batch_size=batch_size, shuffle=False, num_workers=1, drop_last=True
-        )
+        loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=1, drop_last=True)
     else:
-        loader = DataLoader(
-            dataset, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True
-        )
+        loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
     while True:
         yield from loader
 
@@ -85,14 +79,10 @@ class ImageDataset(Dataset):
         # argument, which uses BOX downsampling at powers of two first.
         # Thus, we do it by hand to improve downsample quality.
         while min(*pil_image.size) >= 2 * self.resolution:
-            pil_image = pil_image.resize(
-                tuple(x // 2 for x in pil_image.size), resample=Image.BOX
-            )
+            pil_image = pil_image.resize(tuple(x // 2 for x in pil_image.size), resample=Image.BOX)
 
         scale = self.resolution / min(*pil_image.size)
-        pil_image = pil_image.resize(
-            tuple(round(x * scale) for x in pil_image.size), resample=Image.BICUBIC
-        )
+        pil_image = pil_image.resize(tuple(round(x * scale) for x in pil_image.size), resample=Image.BICUBIC)
 
         arr = np.array(pil_image.convert("RGB"))
         crop_y = (arr.shape[0] - self.resolution) // 2

@@ -20,7 +20,7 @@ def get_base_config():
         attention_dropout_rate=0.0,
         dropout_rate=0.1,
         representation_size=768,
-        classifier='token'
+        classifier="token",
     )
 
 
@@ -41,16 +41,18 @@ def get_b32_config():
 def get_l16_config():
     """Returns the ViT-L/16 configuration."""
     config = get_base_config()
-    config.update(dict(
-        patches=(16, 16),
-        dim=1024,
-        ff_dim=4096,
-        num_heads=16,
-        num_layers=24,
-        attention_dropout_rate=0.0,
-        dropout_rate=0.1,
-        representation_size=1024
-    ))
+    config.update(
+        dict(
+            patches=(16, 16),
+            dim=1024,
+            ff_dim=4096,
+            num_heads=16,
+            num_layers=24,
+            attention_dropout_rate=0.0,
+            dropout_rate=0.1,
+            representation_size=1024,
+        )
+    )
     return config
 
 
@@ -67,53 +69,53 @@ def drop_head_variant(config):
 
 
 PRETRAINED_MODELS = {
-    'B_16': {
-        'config': get_b16_config(),
-        'num_classes': 21843,
-        'image_size': (224, 224),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_16.pth"
+    "B_16": {
+        "config": get_b16_config(),
+        "num_classes": 21843,
+        "image_size": (224, 224),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_16.pth",
     },
-    'B_32': {
-        'config': get_b32_config(),
-        'num_classes': 21843,
-        'image_size': (224, 224),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_32.pth"
+    "B_32": {
+        "config": get_b32_config(),
+        "num_classes": 21843,
+        "image_size": (224, 224),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_32.pth",
     },
-    'L_16': {
-        'config': get_l16_config(),
-        'num_classes': 21843,
-        'image_size': (224, 224),
-        'url': None
+    "L_16": {
+        "config": get_l16_config(),
+        "num_classes": 21843,
+        "image_size": (224, 224),
+        "url": None,
     },
-    'L_32': {
-        'config': get_l32_config(),
-        'num_classes': 21843,
-        'image_size': (224, 224),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_32.pth"
+    "L_32": {
+        "config": get_l32_config(),
+        "num_classes": 21843,
+        "image_size": (224, 224),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_32.pth",
     },
-    'B_16_imagenet1k': {
-        'config': drop_head_variant(get_b16_config()),
-        'num_classes': 1000,
-        'image_size': (384, 384),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_16_imagenet1k.pth"
+    "B_16_imagenet1k": {
+        "config": drop_head_variant(get_b16_config()),
+        "num_classes": 1000,
+        "image_size": (384, 384),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_16_imagenet1k.pth",
     },
-    'B_32_imagenet1k': {
-        'config': drop_head_variant(get_b32_config()),
-        'num_classes': 1000,
-        'image_size': (384, 384),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_32_imagenet1k.pth"
+    "B_32_imagenet1k": {
+        "config": drop_head_variant(get_b32_config()),
+        "num_classes": 1000,
+        "image_size": (384, 384),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/B_32_imagenet1k.pth",
     },
-    'L_16_imagenet1k': {
-        'config': drop_head_variant(get_l16_config()),
-        'num_classes': 1000,
-        'image_size': (384, 384),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_16_imagenet1k.pth"
+    "L_16_imagenet1k": {
+        "config": drop_head_variant(get_l16_config()),
+        "num_classes": 1000,
+        "image_size": (384, 384),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_16_imagenet1k.pth",
     },
-    'L_32_imagenet1k': {
-        'config': drop_head_variant(get_l32_config()),
-        'num_classes': 1000,
-        'image_size': (384, 384),
-        'url': "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_32_imagenet1k.pth"
+    "L_32_imagenet1k": {
+        "config": drop_head_variant(get_l32_config()),
+        "num_classes": 1000,
+        "image_size": (384, 384),
+        "url": "https://github.com/lukemelas/PyTorch-Pretrained-ViT/releases/download/0.0.2/L_32_imagenet1k.pth",
     },
 }
 
@@ -141,57 +143,60 @@ def load_pretrained_weights(
         resize_positional_embedding=False,
         verbose (bool): Whether to print on completion
     """
-    assert bool(model_name) ^ bool(
-        weights_path), 'Expected exactly one of model_name or weights_path'
+    assert bool(model_name) ^ bool(weights_path), "Expected exactly one of model_name or weights_path"
 
     # Load or download weights
     if weights_path is None:
-        url = PRETRAINED_MODELS[model_name]['url']
+        url = PRETRAINED_MODELS[model_name]["url"]
         if url:
             state_dict = model_zoo.load_url(url)
         else:
-            raise ValueError(
-                f'Pretrained model for {model_name} has not yet been released')
+            raise ValueError(f"Pretrained model for {model_name} has not yet been released")
     else:
         state_dict = torch.load(weights_path)
 
     # Modifications to load partial state dict
     expected_missing_keys = []
-    if not load_first_conv and 'patch_embedding.weight' in state_dict:
-        expected_missing_keys += ['patch_embedding.weight',
-                                  'patch_embedding.bias']
-    if not load_fc and 'fc.weight' in state_dict:
-        expected_missing_keys += ['fc.weight', 'fc.bias']
-    if not load_repr_layer and 'pre_logits.weight' in state_dict:
-        expected_missing_keys += ['pre_logits.weight', 'pre_logits.bias']
+    if not load_first_conv and "patch_embedding.weight" in state_dict:
+        expected_missing_keys += ["patch_embedding.weight", "patch_embedding.bias"]
+    if not load_fc and "fc.weight" in state_dict:
+        expected_missing_keys += ["fc.weight", "fc.bias"]
+    if not load_repr_layer and "pre_logits.weight" in state_dict:
+        expected_missing_keys += ["pre_logits.weight", "pre_logits.bias"]
     for key in expected_missing_keys:
         state_dict.pop(key)
 
     # Change size of positional embeddings
     if resize_positional_embedding:
-        posemb = state_dict['positional_embedding.pos_embedding']
-        posemb_new = model.state_dict()['positional_embedding.pos_embedding']
-        state_dict['positional_embedding.pos_embedding'] = \
-            resize_positional_embedding_(posemb=posemb, posemb_new=posemb_new,
-                                         has_class_token=hasattr(model, 'class_token'))
-        maybe_print('Resized positional embeddings from {} to {}'.format(
-                    posemb.shape, posemb_new.shape), verbose)
+        posemb = state_dict["positional_embedding.pos_embedding"]
+        posemb_new = model.state_dict()["positional_embedding.pos_embedding"]
+        state_dict["positional_embedding.pos_embedding"] = resize_positional_embedding_(
+            posemb=posemb,
+            posemb_new=posemb_new,
+            has_class_token=hasattr(model, "class_token"),
+        )
+        maybe_print(
+            "Resized positional embeddings from {} to {}".format(posemb.shape, posemb_new.shape),
+            verbose,
+        )
 
     # Load state dict
     ret = model.load_state_dict(state_dict, strict=False)
     if strict:
-        assert set(ret.missing_keys) == set(expected_missing_keys), \
-            'Missing keys when loading pretrained weights: {}'.format(
-                ret.missing_keys)
-        assert not ret.unexpected_keys, \
-            'Missing keys when loading pretrained weights: {}'.format(
-                ret.unexpected_keys)
-        maybe_print('Loaded pretrained weights.', verbose)
+        assert set(ret.missing_keys) == set(
+            expected_missing_keys
+        ), "Missing keys when loading pretrained weights: {}".format(ret.missing_keys)
+        assert not ret.unexpected_keys, "Missing keys when loading pretrained weights: {}".format(ret.unexpected_keys)
+        maybe_print("Loaded pretrained weights.", verbose)
     else:
-        maybe_print('Missing keys when loading pretrained weights: {}'.format(
-            ret.missing_keys), verbose)
-        maybe_print('Unexpected keys when loading pretrained weights: {}'.format(
-            ret.unexpected_keys), verbose)
+        maybe_print(
+            "Missing keys when loading pretrained weights: {}".format(ret.missing_keys),
+            verbose,
+        )
+        maybe_print(
+            "Unexpected keys when loading pretrained weights: {}".format(ret.unexpected_keys),
+            verbose,
+        )
         return ret
 
 
@@ -268,8 +273,7 @@ class MultiHeadedSelfAttention(nn.Module):
         """
         # (B, S, D) -proj-> (B, S, D) -split-> (B, S, H, W) -trans-> (B, H, S, W)
         q, k, v = self.proj_q(x), self.proj_k(x), self.proj_v(x)
-        q, k, v = (split_last(x, (self.n_heads, -1)).transpose(1, 2)
-                   for x in [q, k, v])
+        q, k, v = (split_last(x, (self.n_heads, -1)).transpose(1, 2) for x in [q, k, v])
         # (B, H, S, W) @ (B, H, W, S) -> (B, H, S, S) -softmax-> (B, H, S, S)
         scores = q @ k.transpose(-2, -1) / np.sqrt(k.size(-1))
         if mask is not None:
@@ -322,8 +326,7 @@ class Transformer(nn.Module):
 
     def __init__(self, num_layers, dim, num_heads, ff_dim, dropout):
         super().__init__()
-        self.blocks = nn.ModuleList([
-            Block(dim, num_heads, ff_dim, dropout) for _ in range(num_layers)])
+        self.blocks = nn.ModuleList([Block(dim, num_heads, ff_dim, dropout) for _ in range(num_layers)])
 
     def forward(self, x, mask=None):
         for block in self.blocks:
@@ -367,8 +370,8 @@ class ViT(nn.Module):
         dropout_rate: float = 0.1,
         representation_size: Optional[int] = None,
         load_repr_layer: bool = False,
-        classifier: str = 'token',
-        positional_embedding: str = '1d',
+        classifier: str = "token",
+        positional_embedding: str = "1d",
         in_channels: int = 3,
         image_size: Optional[int] = None,
         num_classes: Optional[int] = None,
@@ -377,7 +380,7 @@ class ViT(nn.Module):
 
         # Configuration
         if name is None:
-            check_msg = 'must specify name of pretrained model'
+            check_msg = "must specify name of pretrained model"
             assert not pretrained, check_msg
             assert not resize_positional_embedding, check_msg
             if num_classes is None:
@@ -385,22 +388,21 @@ class ViT(nn.Module):
             if image_size is None:
                 image_size = 384
         else:  # load pretrained model
-            assert name in PRETRAINED_MODELS.keys(), \
-                'name should be in: ' + ', '.join(PRETRAINED_MODELS.keys())
-            config = PRETRAINED_MODELS[name]['config']
-            patches = config['patches']
-            dim = config['dim']
-            ff_dim = config['ff_dim']
-            num_heads = config['num_heads']
-            num_layers = config['num_layers']
-            attention_dropout_rate = config['attention_dropout_rate']
-            dropout_rate = config['dropout_rate']
-            representation_size = config['representation_size']
-            classifier = config['classifier']
+            assert name in PRETRAINED_MODELS.keys(), "name should be in: " + ", ".join(PRETRAINED_MODELS.keys())
+            config = PRETRAINED_MODELS[name]["config"]
+            patches = config["patches"]
+            dim = config["dim"]
+            ff_dim = config["ff_dim"]
+            num_heads = config["num_heads"]
+            num_layers = config["num_layers"]
+            attention_dropout_rate = config["attention_dropout_rate"]
+            dropout_rate = config["dropout_rate"]
+            representation_size = config["representation_size"]
+            classifier = config["classifier"]
             if image_size is None:
-                image_size = PRETRAINED_MODELS[name]['image_size']
+                image_size = PRETRAINED_MODELS[name]["image_size"]
             if num_classes is None:
-                num_classes = PRETRAINED_MODELS[name]['num_classes']
+                num_classes = PRETRAINED_MODELS[name]["num_classes"]
         self.image_size = image_size
 
         # Image and patch sizes
@@ -410,23 +412,27 @@ class ViT(nn.Module):
         seq_len = gh * gw
 
         # Patch embedding
-        self.patch_embedding = nn.Conv2d(
-            in_channels, dim, kernel_size=(fh, fw), stride=(fh, fw))
+        self.patch_embedding = nn.Conv2d(in_channels, dim, kernel_size=(fh, fw), stride=(fh, fw))
 
         # Class token
-        if classifier == 'token':
+        if classifier == "token":
             self.class_token = nn.Parameter(torch.zeros(1, 1, dim))
             seq_len += 1
 
         # Positional embedding
-        if positional_embedding.lower() == '1d':
+        if positional_embedding.lower() == "1d":
             self.positional_embedding = PositionalEmbedding1D(seq_len, dim)
         else:
             raise NotImplementedError()
 
         # Transformer
-        self.transformer = Transformer(num_layers=num_layers, dim=dim, num_heads=num_heads,
-                                       ff_dim=ff_dim, dropout=dropout_rate)
+        self.transformer = Transformer(
+            num_layers=num_layers,
+            dim=dim,
+            num_heads=num_heads,
+            ff_dim=ff_dim,
+            dropout=dropout_rate,
+        )
 
         # Representation layer
         if representation_size and load_repr_layer:
@@ -445,15 +451,15 @@ class ViT(nn.Module):
         # Load pretrained model
         if pretrained:
             pretrained_num_channels = 3
-            pretrained_num_classes = PRETRAINED_MODELS[name]['num_classes']
-            pretrained_image_size = PRETRAINED_MODELS[name]['image_size']
+            pretrained_num_classes = PRETRAINED_MODELS[name]["num_classes"]
+            pretrained_image_size = PRETRAINED_MODELS[name]["image_size"]
             load_pretrained_weights(
-                self, name,
+                self,
+                name,
                 load_first_conv=(in_channels == pretrained_num_channels),
                 load_fc=(num_classes == pretrained_num_classes),
                 load_repr_layer=load_repr_layer,
-                resize_positional_embedding=(
-                    image_size != pretrained_image_size),
+                resize_positional_embedding=(image_size != pretrained_image_size),
             )
 
     @torch.no_grad()
@@ -462,9 +468,10 @@ class ViT(nn.Module):
             if isinstance(m, nn.Linear):
                 # _trunc_normal(m.weight, std=0.02)  # from .initialization import _trunc_normal
                 nn.init.xavier_uniform_(m.weight)
-                if hasattr(m, 'bias') and m.bias is not None:
+                if hasattr(m, "bias") and m.bias is not None:
                     # nn.init.constant(m.bias, 0)
                     nn.init.normal_(m.bias, std=1e-6)
+
         self.apply(_init)
         nn.init.constant_(self.fc.weight, 0)
         nn.init.constant_(self.fc.bias, 0)
@@ -480,16 +487,15 @@ class ViT(nn.Module):
         b, c, fh, fw = x.shape
         x = self.patch_embedding(x)  # b,d,gh,gw
         x = x.flatten(2).transpose(1, 2)  # b,gh*gw,d
-        if hasattr(self, 'class_token'):
-            x = torch.cat((self.class_token.expand(
-                b, -1, -1), x), dim=1)  # b,gh*gw+1,d
-        if hasattr(self, 'positional_embedding'):
+        if hasattr(self, "class_token"):
+            x = torch.cat((self.class_token.expand(b, -1, -1), x), dim=1)  # b,gh*gw+1,d
+        if hasattr(self, "positional_embedding"):
             x = self.positional_embedding(x)  # b,gh*gw+1,d
         x = self.transformer(x)  # b,gh*gw+1,d
-        if hasattr(self, 'pre_logits'):
+        if hasattr(self, "pre_logits"):
             x = self.pre_logits(x)
             x = torch.tanh(x)
-        if hasattr(self, 'fc'):
+        if hasattr(self, "fc"):
             x = self.norm(x)[:, 0]  # b,d
             x = self.fc(x)  # b,num_classes
         return x

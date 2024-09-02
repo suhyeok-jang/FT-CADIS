@@ -6,9 +6,10 @@ from statsmodels.stats.proportion import proportion_confint
 
 torch.manual_seed(0)
 
+
 # Adapted from https://github.com/locuslab/smoothing/blob/master/code/core.py
 class Smooth(object):
-    """A smoothed classifier g """
+    """A smoothed classifier g"""
 
     # to abstain, Smooth returns this int
     ABSTAIN = -1
@@ -22,10 +23,10 @@ class Smooth(object):
         self.base_classifier = base_classifier
         self.num_classes = num_classes
         self.sigma = sigma
-        self.t = t 
+        self.t = t
 
     def certify(self, x: torch.tensor, n0: int, n: int, alpha: float, batch_size: int) -> (int, float):
-        """ Monte Carlo algorithm for certifying that g's prediction around x is constant within some L2 radius.
+        """Monte Carlo algorithm for certifying that g's prediction around x is constant within some L2 radius.
         With probability at least 1 - alpha, the class returned by this method will equal g(x), and g's prediction will
         robust within a L2 ball of radius R around x.
         :param x: the input [channel x height x width]
@@ -53,7 +54,7 @@ class Smooth(object):
             return cAHat, radius
 
     def predict(self, x: torch.tensor, n: int, alpha: float, batch_size: int) -> int:
-        """ Monte Carlo algorithm for evaluating the prediction of g at x.  With probability at least 1 - alpha, the
+        """Monte Carlo algorithm for evaluating the prediction of g at x.  With probability at least 1 - alpha, the
         class returned by this method will equal g(x).
         This function uses the hypothesis test described in https://arxiv.org/abs/1610.03944
         for identifying the top category of a multinomial distribution.
@@ -75,7 +76,7 @@ class Smooth(object):
             return top2[0]
 
     def _sample_noise(self, x: torch.tensor, num: int, batch_size) -> np.ndarray:
-        """ Sample the base classifier's prediction under noisy corruptions of the input x.
+        """Sample the base classifier's prediction under noisy corruptions of the input x.
         :param x: the input [channel x width x height]
         :param num: number of samples to collect
         :param batch_size:
@@ -100,7 +101,7 @@ class Smooth(object):
         return counts
 
     def _lower_confidence_bound(self, NA: int, N: int, alpha: float) -> float:
-        """ Returns a (1 - alpha) lower confidence bound on a bernoulli proportion.
+        """Returns a (1 - alpha) lower confidence bound on a bernoulli proportion.
         This function uses the Clopper-Pearson method.
         :param NA: the number of "successes"
         :param N: the number of total draws

@@ -131,11 +131,11 @@ class LoRA_ViT_huggingface(nn.Module):
         num_layer = len(self.w_As)  # actually, it is half
         a_tensors = {f"w_a_{i:03d}": self.w_As[i].weight for i in range(num_layer)}
         b_tensors = {f"w_b_{i:03d}": self.w_Bs[i].weight for i in range(num_layer)}
-        
+
         _in = self.lora_vit.classifier.in_features
         _out = self.lora_vit.classifier.out_features
         fc_tensors = {f"fc_{_in}in_{_out}out": self.lora_vit.classifier.weight}
-        
+
         merged_dict = {**a_tensors, **b_tensors, **fc_tensors}
         save_file(merged_dict, filename)
 
@@ -157,7 +157,7 @@ class LoRA_ViT_huggingface(nn.Module):
                 saved_key = f"w_b_{i:03d}"
                 saved_tensor = f.get_tensor(saved_key)
                 w_B_linear.weight = Parameter(saved_tensor)
-                
+
             _in = self.lora_vit.classifier.in_features
             _out = self.lora_vit.classifier.out_features
             saved_key = f"fc_{_in}in_{_out}out"
@@ -168,7 +168,7 @@ class LoRA_ViT_huggingface(nn.Module):
                 print("this fc weight is not for this model")
 
     def reset_parameters(self) -> None:
-        #훈련 초기때 BA가 0이되게끔 설정
+        # 훈련 초기때 BA가 0이되게끔 설정
         for w_A in self.w_As:
             nn.init.kaiming_uniform_(w_A.weight, a=math.sqrt(5))
         for w_B in self.w_Bs:
@@ -276,11 +276,11 @@ class LoRA_ViT(nn.Module):
         num_layer = len(self.w_As)  # actually, it is half
         a_tensors = {f"w_a_{i:03d}": self.w_As[i].weight for i in range(num_layer)}
         b_tensors = {f"w_b_{i:03d}": self.w_Bs[i].weight for i in range(num_layer)}
-        
+
         _in = self.lora_vit.fc.in_features
         _out = self.lora_vit.fc.out_features
         fc_tensors = {f"fc_{_in}in_{_out}out": self.lora_vit.fc.weight}
-        
+
         merged_dict = {**a_tensors, **b_tensors, **fc_tensors}
         save_file(merged_dict, filename)
 
@@ -302,7 +302,7 @@ class LoRA_ViT(nn.Module):
                 saved_key = f"w_b_{i:03d}"
                 saved_tensor = f.get_tensor(saved_key)
                 w_B_linear.weight = Parameter(saved_tensor)
-                
+
             _in = self.lora_vit.fc.in_features
             _out = self.lora_vit.fc.out_features
             saved_key = f"fc_{_in}in_{_out}out"
@@ -340,7 +340,7 @@ class _LoRA_qkv_timm(nn.Module):
         linear_a_v: nn.Module,
         linear_b_v: nn.Module,
         r: int,
-        alpha: int
+        alpha: int,
     ):
         super().__init__()
         self.qkv = qkv
@@ -363,7 +363,14 @@ class _LoRA_qkv_timm(nn.Module):
 
 
 class LoRA_ViT_timm(nn.Module):
-    def __init__(self, vit_model: timm_ViT, r: int, alpha: int, num_classes: int = 0, lora_layer=None):
+    def __init__(
+        self,
+        vit_model: timm_ViT,
+        r: int,
+        alpha: int,
+        num_classes: int = 0,
+        lora_layer=None,
+    ):
         super(LoRA_ViT_timm, self).__init__()
 
         assert r > 0
@@ -380,7 +387,7 @@ class LoRA_ViT_timm(nn.Module):
 
         # lets freeze first, except classifier (already ImageNet-1K finetuned)
         for name, param in vit_model.named_parameters():
-            if name.startswith('head'):
+            if name.startswith("head"):
                 param.requires_grad = True
             else:
                 param.requires_grad = False
@@ -407,13 +414,13 @@ class LoRA_ViT_timm(nn.Module):
                 w_a_linear_v,
                 w_b_linear_v,
                 r,
-                alpha
+                alpha,
             )
-        
-        #Lora weight initialization
+
+        # Lora weight initialization
         self.reset_parameters()
         self.lora_vit = vit_model
-        
+
     def save_fc_parameters(self, filename: str) -> None:
         r"""Only safetensors is supported now.
 
@@ -446,7 +453,7 @@ class LoRA_ViT_timm(nn.Module):
         r"""Only safetensors is supported now.
 
         pip install safetensor if you do not have one installed yet.
-        
+
         save both lora and fc parameters.
         """
 
@@ -455,11 +462,11 @@ class LoRA_ViT_timm(nn.Module):
         num_layer = len(self.w_As)  # actually, it is half
         a_tensors = {f"w_a_{i:03d}": self.w_As[i].weight for i in range(num_layer)}
         b_tensors = {f"w_b_{i:03d}": self.w_Bs[i].weight for i in range(num_layer)}
-        
+
         _in = self.lora_vit.head.in_features
         _out = self.lora_vit.head.out_features
         fc_tensors = {f"fc_{_in}in_{_out}out": self.lora_vit.head.weight}
-        
+
         merged_dict = {**a_tensors, **b_tensors, **fc_tensors}
         save_file(merged_dict, filename)
 
@@ -483,7 +490,7 @@ class LoRA_ViT_timm(nn.Module):
                 saved_key = f"w_b_{i:03d}"
                 saved_tensor = f.get_tensor(saved_key)
                 w_B_linear.weight = Parameter(saved_tensor)
-                
+
             _in = self.lora_vit.head.in_features
             _out = self.lora_vit.head.out_features
             saved_key = f"fc_{_in}in_{_out}out"
@@ -508,8 +515,8 @@ class LoRA_ViT_timm(nn.Module):
     #     x = rearrange(x, "(b s) d -> b (s d)", s=30)
     #     x = self.proj_3d(x)
     #     return x
-    
-    
+
+
 class _LoRA_qkv_timm_x(nn.Module):
     """In timm it is implemented as
     self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
@@ -532,30 +539,31 @@ class _LoRA_qkv_timm_x(nn.Module):
         super().__init__()
         self.qkv = qkv
         for i in range(len(linear_a_qs)):
-            setattr(self, f'linear_a_q_{i}', linear_a_qs[i])
-            setattr(self, f'linear_b_q_{i}', linear_b_qs[i])
-            setattr(self, f'linear_a_v_{i}', linear_a_vs[i])
-            setattr(self, f'linear_b_v_{i}', linear_b_vs[i])
+            setattr(self, f"linear_a_q_{i}", linear_a_qs[i])
+            setattr(self, f"linear_b_q_{i}", linear_b_qs[i])
+            setattr(self, f"linear_a_v_{i}", linear_a_vs[i])
+            setattr(self, f"linear_b_v_{i}", linear_b_vs[i])
         self.dim = qkv.in_features
         self.w_identity = torch.eye(qkv.in_features)
         self.lora_id = 0
         self.scale_list = scale_list
-    
+
     def change_lora(self, num):
         self.lora_id = num
 
     def forward(self, x):
         qkv = self.qkv(x)  # B,N,3*org_C
-        linear_a_q = getattr(self, f'linear_a_q_{self.lora_id}')
-        linear_b_q = getattr(self, f'linear_b_q_{self.lora_id}')
-        linear_a_v = getattr(self, f'linear_a_v_{self.lora_id}')
-        linear_b_v = getattr(self, f'linear_b_v_{self.lora_id}')
+        linear_a_q = getattr(self, f"linear_a_q_{self.lora_id}")
+        linear_b_q = getattr(self, f"linear_b_q_{self.lora_id}")
+        linear_a_v = getattr(self, f"linear_a_v_{self.lora_id}")
+        linear_b_v = getattr(self, f"linear_b_v_{self.lora_id}")
         new_q = linear_b_q(linear_a_q(x))
         new_v = linear_b_v(linear_a_v(x))
         qkv[:, :, : self.dim] += self.scale_list[self.lora_id] * new_q
         qkv[:, :, -self.dim :] += self.scale_list[self.lora_id] * new_v
         return qkv
-        
+
+
 class LoRA_ViT_timm_x(nn.Module):
     def __init__(self, vit_model: timm_ViT, lora_files: list, lora_layer=None):
         super(LoRA_ViT_timm_x, self).__init__()
@@ -566,14 +574,14 @@ class LoRA_ViT_timm_x(nn.Module):
         # create for storage, then we can init them or load weights
         self.w_As = []  # These are linear layers
         self.w_Bs = []
-        
+
         self.fc_loras = []
         self.num_classes = []
 
         # lets freeze first
         for param in vit_model.parameters():
             param.requires_grad = False
-        
+
         self.lora_vit = vit_model
 
         # Here, we do the surgery
@@ -583,7 +591,7 @@ class LoRA_ViT_timm_x(nn.Module):
                 continue
             w_qkv_linear = blk.attn.qkv
             self.dim = w_qkv_linear.in_features
-            
+
             w_a_linear_qs = []
             w_b_linear_qs = []
             w_a_linear_vs = []
@@ -592,53 +600,53 @@ class LoRA_ViT_timm_x(nn.Module):
             for file_path in lora_files:
                 with safe_open(file_path, framework="pt") as f:
                     melo_info = file_path.split("/")[-1].split("_")
-                    
+
                     r = int(melo_info[3])
                     alpha = int(melo_info[4])
                     scale_list.append(alpha // r)
-                    
+
                     w_a_linear_q = nn.Linear(self.dim, r, bias=False)
                     w_b_linear_q = nn.Linear(r, self.dim, bias=False)
                     w_a_linear_v = nn.Linear(self.dim, r, bias=False)
                     w_b_linear_v = nn.Linear(r, self.dim, bias=False)
-                    
+
                     w_a_linear_q.weight = Parameter(f.get_tensor(f"w_a_{t_layer_i * 2:03d}"))
                     w_b_linear_q.weight = Parameter(f.get_tensor(f"w_b_{t_layer_i * 2:03d}"))
                     w_a_linear_v.weight = Parameter(f.get_tensor(f"w_a_{t_layer_i * 2 + 1:03d}"))
                     w_b_linear_v.weight = Parameter(f.get_tensor(f"w_b_{t_layer_i * 2 + 1:03d}"))
-                    
+
                     w_a_linear_qs.append(w_a_linear_q)
                     w_b_linear_qs.append(w_b_linear_q)
                     w_a_linear_vs.append(w_a_linear_v)
                     w_b_linear_vs.append(w_b_linear_v)
-                    
+
                     _in = self.lora_vit.head.in_features
                     _out = int(melo_info[5])
                     self.num_classes.append(_out)
                     self.fc_loras.append(f.get_tensor(f"fc_{_in}in_{_out}out"))
-            
+
             blk.attn.qkv = _LoRA_qkv_timm_x(
                 w_qkv_linear,
                 w_a_linear_qs,
                 w_b_linear_qs,
                 w_a_linear_vs,
                 w_b_linear_vs,
-                scale_list
+                scale_list,
             )
         # self.reset_parameters()
         # self.proj_3d = nn.Linear(num_classes * 30, num_classes)
         for file_path in lora_files:
             with safe_open(file_path, framework="pt") as f:
                 for key in f.keys():
-                    if 'fc_' in key:
+                    if "fc_" in key:
                         self.fc_loras.append(f.get_tensor(key))
                         break
         # if num_classes > 0:
         #     self.lora_vit.reset_classifier(num_classes=num_classes)
-            # self.lora_vit.head = nn.Linear(
-            #     self.dim, num_classes)
-    
-    def swith_lora(self, idx:int):
+        # self.lora_vit.head = nn.Linear(
+        #     self.dim, num_classes)
+
+    def swith_lora(self, idx: int):
         for t_layer_i, blk in enumerate(self.lora_vit.blocks):
             blk.attn.qkv.change_lora(idx)
         self.lora_vit.reset_classifier(num_classes=self.num_classes[idx])
@@ -648,7 +656,6 @@ class LoRA_ViT_timm_x(nn.Module):
         return self.lora_vit(x)
 
 
-
 if __name__ == "__main__":  # Debug
     img = torch.randn(2, 3, 224, 224)
     model = timm.create_model("vit_base_patch16_224", pretrained=True)
@@ -656,7 +663,7 @@ if __name__ == "__main__":  # Debug
     pred = lora_vit(img)
     print(pred.shape)
 
-    img = torch.randn(2*20, 3, 224, 224)
+    img = torch.randn(2 * 20, 3, 224, 224)
     model = timm.create_model("vit_base_patch16_224", pretrained=True)
     lora_vit = LoRA_ViT_timm(vit_model=model, r=4, num_classes=10)
     pred = lora_vit.forward3D(img)

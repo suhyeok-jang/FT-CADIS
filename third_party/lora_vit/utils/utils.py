@@ -24,6 +24,7 @@ def initLogging(logFilename):
         console.setFormatter(formatter)
         logger.addHandler(console)
 
+
 def init():
     taskfolder = f"./results/"
     if not os.path.exists(taskfolder):
@@ -38,7 +39,7 @@ def init():
 
 def save(result, net, ckpt_path):
     # Save best model
-    
+
     torch.save(net.state_dict(), ckpt_path.replace(".pt", "_last.pt"))
 
     logging.info(f"BEST : {result.best_result:.3f}, EPOCH: {(result.best_epoch):3}")

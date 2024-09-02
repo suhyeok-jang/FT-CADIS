@@ -20,28 +20,40 @@ class GraphDataset(Dataset):
         if data_type == "train":
             for grade in os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TRAIN"):
                 _cases = os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TRAIN/{grade}")
-                _cases = [f"{data_path}/dataset2-master/dataset2-master/images/TRAIN/{grade}/{_}" for _ in _cases if ".jpeg" in _]
+                _cases = [
+                    f"{data_path}/dataset2-master/dataset2-master/images/TRAIN/{grade}/{_}"
+                    for _ in _cases
+                    if ".jpeg" in _
+                ]
                 cases = cases + _cases
         elif data_type == "val":
             for grade in os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TEST"):
                 _cases = os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TEST/{grade}")
-                _cases = [f"{data_path}/dataset2-master/dataset2-master/images/TEST/{grade}/{_}" for _ in _cases if ".jpeg" in _]
+                _cases = [
+                    f"{data_path}/dataset2-master/dataset2-master/images/TEST/{grade}/{_}"
+                    for _ in _cases
+                    if ".jpeg" in _
+                ]
                 cases = cases + _cases
         elif data_type == "test":
             for grade in os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TEST_SIMPLE"):
                 _cases = os.listdir(f"{data_path}/dataset2-master/dataset2-master/images/TEST_SIMPLE/{grade}")
-                _cases = [f"{data_path}/dataset2-master/dataset2-master/images/TEST_SIMPLE/{grade}/{_}" for _ in _cases if ".jpeg" in _]
+                _cases = [
+                    f"{data_path}/dataset2-master/dataset2-master/images/TEST_SIMPLE/{grade}/{_}"
+                    for _ in _cases
+                    if ".jpeg" in _
+                ]
                 cases = cases + _cases
         else:
             print("Dataset type error")
             exit()
 
         random.shuffle(cases)
-        
+
         if data_type == "train":
-            assert ((data_size > 0) and (data_size <= 1.0))
-            cases = cases[:int(len(cases) * data_size)]
-        
+            assert (data_size > 0) and (data_size <= 1.0)
+            cases = cases[: int(len(cases) * data_size)]
+
         self.cases = cases
 
     def __len__(self):
@@ -52,10 +64,10 @@ class GraphDataset(Dataset):
         resize = Resize([224, 224])
         normalize = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         image = np.array(Image.open(self.cases[idx]).convert("RGB")).astype(np.float32) / 255.0
-        image = rearrange(torch.tensor(image, dtype=torch.float32), 'h w c -> c h w')
+        image = rearrange(torch.tensor(image, dtype=torch.float32), "h w c -> c h w")
         image = resize(image)
         image = normalize(image)
-        
+
         label_path = str(self.cases[idx].split("/")[5])
         # NEUTROPHIL 0 MONOCYTE 1 EOSINOPHIL 2 LYMPHOCYTE 3
         if label_path == "NEUTROPHIL":
@@ -79,7 +91,7 @@ def BloodDataloader(cfg):
         num_workers=cfg.num_workers,
         drop_last=True,
     )
-    
+
     val_set = DataLoader(
         GraphDataset(data_type="val", fold_idx=cfg.fold, data_path=cfg.data_path),
         batch_size=cfg.bs,
@@ -97,4 +109,3 @@ def BloodDataloader(cfg):
     )
 
     return train_set, val_set, test_set
-

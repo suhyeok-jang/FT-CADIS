@@ -29,9 +29,7 @@ def make_master_params(model_params):
     Copy model parameters into a (differently-shaped) list of full-precision
     parameters.
     """
-    master_params = _flatten_dense_tensors(
-        [param.detach().float() for param in model_params]
-    )
+    master_params = _flatten_dense_tensors([param.detach().float() for param in model_params])
     master_params = nn.Parameter(master_params)
     master_params.requires_grad = True
     return [master_params]
@@ -42,9 +40,7 @@ def model_grads_to_master_grads(model_params, master_params):
     Copy the gradients from the model parameters into the master parameters
     from make_master_params().
     """
-    master_params[0].grad = _flatten_dense_tensors(
-        [param.grad.data.detach().float() for param in model_params]
-    )
+    master_params[0].grad = _flatten_dense_tensors([param.grad.data.detach().float() for param in model_params])
 
 
 def master_params_to_model_params(model_params, master_params):
@@ -55,9 +51,7 @@ def master_params_to_model_params(model_params, master_params):
     # silently not copy any parameters.
     model_params = list(model_params)
 
-    for param, master_param in zip(
-        model_params, unflatten_master_params(model_params, master_params)
-    ):
+    for param, master_param in zip(model_params, unflatten_master_params(model_params, master_params)):
         param.detach().copy_(master_param)
 
 

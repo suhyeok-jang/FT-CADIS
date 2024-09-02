@@ -135,9 +135,9 @@ configs/generated/
 *.rar
 
 #Not important folders
-diffusion_denoised_smoothing/
-code/
 logs/
 data/
 models/
+test/
+checkpoint/
 

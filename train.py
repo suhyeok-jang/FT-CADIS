@@ -33,8 +33,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 parser = argparse.ArgumentParser(description="PyTorch FT-CADIS Training")
 parser.add_argument("--seed", default=0, type=int)
-parser.add_argument('--id', default=None, type=int,
-                    help='experiment id')
+parser.add_argument("--id", default=None, type=int, help="experiment id")
 parser.add_argument("--dataset", type=str, choices=DATASETS)
 parser.add_argument("--arch", type=str, choices=ARCHITECTURES)
 parser.add_argument(
@@ -88,7 +87,7 @@ parser.add_argument(
     action="store_true",
     help="if true, tries to resume training from existing checkpoint",
 )
-parser.add_argument('--load_from', default=None, help="""Path to load checkpoints to resume training.""")
+parser.add_argument("--load_from", default=None, help="""Path to load checkpoints to resume training.""")
 parser.add_argument(
     "--eps",
     default=64,
@@ -101,9 +100,7 @@ parser.add_argument(
     type=int,
     help="number of steps of PGD (Projected Gradient Descent) attack",
 )
-parser.add_argument(
-    "--lbd", default=1.0, type=float, help="strength of the contribution of L^MAdv"
-) 
+parser.add_argument("--lbd", default=1.0, type=float, help="strength of the contribution of L^MAdv")
 
 parser.add_argument(
     "--eps_double",
@@ -194,6 +191,7 @@ parser.add_argument(
 args = parser.parse_args()
 args.eps /= 256.0
 
+
 def main():
     utils.init_distributed_mode(args)
     # fix the seed for reproducibility
@@ -202,11 +200,11 @@ def main():
     print("\n".join("%s: %s" % (k, str(v)) for k, v in sorted(dict(vars(args)).items())))
     cudnn.benchmark = True
 
-    #Set the effective batch size considering the number of denoised images per sample
+    # Set the effective batch size considering the number of denoised images per sample
     eff_batch_size = int(args.batch * args.accum_iter * utils.get_world_size() / args.num_noises)
-    if args.lr is None: 
+    if args.lr is None:
         args.lr = args.blr * eff_batch_size / 256
-    
+
     if not args.resume:
         args.outdir = f"logs/ft-cadis/{args.ft_method}/{args.dataset}/adv_{args.eps}_{args.num_steps}/lbd_{args.lbd}/num_{args.num_noises}/noise_{args.train_noise_sd}/lr:{args.lr}_eff_batch:{eff_batch_size}"
         args.outdir = args.outdir + f"/{args.arch}/{args.id}/"
@@ -214,8 +212,8 @@ def main():
             os.makedirs(args.outdir, exist_ok=True)
     else:
         args.outdir = os.path.dirname(args.load_from)
-        
-    pin_memory = (args.dataset == "imagenet")
+
+    pin_memory = args.dataset == "imagenet"
     train_dataset = get_dataset(args.dataset, "train")
     print(f"Train Data loaded: there are {len(train_dataset)} images.")
 
@@ -259,7 +257,7 @@ def main():
     )
 
     attacker = PGD(steps=args.num_steps, device=device, max_norm=args.eps)
-    
+
     classifier = nn.parallel.DistributedDataParallel(classifier, device_ids=[args.gpu], find_unused_parameters=False)
 
     if args.dataset == "cifar10":
@@ -272,20 +270,19 @@ def main():
         )
 
     # Get the timestep t corresponding to noise level sigma (set the level to twice the original since the range is [-1,1])
-    target_sigmas = {'train': args.train_noise_sd * 2,
-                     'valid': args.valid_noise_sd * 2}
-    real_sigmas = {'train': 0, 'valid': 0}
-    time_steps = {'train': 0, 'valid': 0}
-    
-    for key in ['train', 'valid']:
+    target_sigmas = {"train": args.train_noise_sd * 2, "valid": args.valid_noise_sd * 2}
+    real_sigmas = {"train": 0, "valid": 0}
+    time_steps = {"train": 0, "valid": 0}
+
+    for key in ["train", "valid"]:
         while real_sigmas[key] < target_sigmas[key]:
             time_steps[key] += 1
             a = denoiser.module.diffusion.sqrt_alphas_cumprod[time_steps[key]]
             b = denoiser.module.diffusion.sqrt_one_minus_alphas_cumprod[time_steps[key]]
             real_sigmas[key] = b / a
 
-    train_time_step = time_steps['train']
-    valid_time_step = time_steps['valid']
+    train_time_step = time_steps["train"]
+    valid_time_step = time_steps["valid"]
 
     print(f"train_noise level:{args.train_noise_sd}")
     print(f"valid_noise level:{args.valid_noise_sd}")
@@ -335,29 +332,26 @@ def main():
         writer = SummaryWriter(args.outdir)
 
     starting_epoch = 0
-    
+
     if args.resume:
         model_path = args.load_from
-        
+
         if os.path.isfile(model_path):
             print("=> loading checkpoint '{}'".format(model_path))
-            checkpoint = torch.load(model_path,
-                                    map_location=lambda storage, loc: storage)
-            starting_epoch = checkpoint['epoch']
-            classifier.module.load_state_dict(checkpoint['state_dict'])
-            optimizer.load_state_dict(checkpoint['optimizer'])
-            print("=> loaded checkpoint '{}' (epoch {})"
-                  .format(model_path, checkpoint['epoch']))
+            checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
+            starting_epoch = checkpoint["epoch"]
+            classifier.module.load_state_dict(checkpoint["state_dict"])
+            optimizer.load_state_dict(checkpoint["optimizer"])
+            print("=> loaded checkpoint '{}' (epoch {})".format(model_path, checkpoint["epoch"]))
         else:
             print("=> no checkpoint found at '{}'".format(model_path))
-
 
     print("Starting Fine-tuning Off-the-shelf Model!")
     for epoch in range(starting_epoch, args.epochs):
         before = time.time()
 
         if args.eps_double:
-            if (epoch >= args.warmup_eps):
+            if epoch >= args.warmup_eps:
                 attacker = PGD(steps=args.num_steps, device=device, max_norm=args.eps * 2.0)
 
         train_loader.sampler.set_epoch(epoch)
@@ -391,7 +385,7 @@ def main():
             valid_time_step,
             criterion,
             fp16_scaler,
-            device
+            device,
         )
 
         if utils.is_main_process():
@@ -426,7 +420,7 @@ def main():
             )
 
         if epoch == 0 or (epoch + 1) % 5 == 0 or (epoch + 1) == args.epochs:
-        
+
             model_path = os.path.join(args.outdir, f"checkpoint-{epoch+1}.pth.tar")
 
             save_dict = {
@@ -443,8 +437,8 @@ def main():
 
 
 def _chunk_minibatch_stochastic(batch, num_batches):
-    X, y = batch  
-    batch_size = len(X) // num_batches  
+    X, y = batch
+    batch_size = len(X) // num_batches
     for i in range(num_batches):
         yield X[i * batch_size : (i + 1) * batch_size], y[i * batch_size : (i + 1) * batch_size],
 
@@ -523,16 +517,16 @@ def ft_cadis(
                 loss_sce, loss_index = loss_sce.sort()
 
                 confidences_sorted = torch.gather(confidences, dim=1, index=loss_index)
-                if args.warm_start: 
+                if args.warm_start:
                     all_false_rows = torch.all(confidences_sorted == False, dim=1)
                     confidences_sorted[all_false_rows, 0] = True
 
                 loss_sce = (loss_sce * confidences_sorted).mean(1)
 
-                # Step 6:  Compute the Confidence-Aware Masked Adversarial Loss
+                # Step 6: Compute the Confidence-Aware Masked Adversarial Loss
                 mask_adv = torch.all(confidences == True, dim=1)
-                
-                logits_chunk = torch.chunk(logits_c, args.num_noises, dim=0)  # 4개로 분할
+
+                logits_chunk = torch.chunk(logits_c, args.num_noises, dim=0)
 
                 loss_madv = [
                     F.kl_div(
@@ -546,9 +540,9 @@ def ft_cadis(
                 loss_madv, _ = torch.cat(loss_madv, dim=1).max(1)
 
                 loss_madv = args.lbd * loss_madv * mask_adv
-                
-                # Step 7:  Compute the Total Loss
-                loss = (loss_sce + loss_madv).mean() 
+
+                # Step 7: Compute the Total Loss
+                loss = (loss_sce + loss_madv).mean()
 
             loss_value = loss.item()
 
@@ -669,7 +663,7 @@ class PGD(object):
         mu0 = eta0.view(batch_size, -1).mean(1).view(-1, 1, 1, 1)
         sigma0 = (eta0**2).view(batch_size, -1).mean(1).sqrt().view(-1, 1, 1, 1)
 
-        #Step size of attack
+        # Step size of attack
         alpha = self.max_norm / self.steps * 2
         for _ in range(self.steps):
             eta.requires_grad_()
@@ -684,7 +678,7 @@ class PGD(object):
 
             grad = torch.autograd.grad(loss, [eta])[0]  # returns the sum of gradients of outputs
             grad_norm = _batch_l2norm(grad).view(-1, 1, 1, 1)
-            grad = grad / (grad_norm + 1e-8)  
+            grad = grad / (grad_norm + 1e-8)
 
             # Gradient ascent -> Maximize kl loss
             eta = eta + alpha * grad
@@ -713,7 +707,7 @@ def valid(loader, classifier, denoiser, time_step, criterion, fp16_scaler, devic
     denoiser.eval()
 
     with torch.no_grad():
-        for (inputs, targets) in (metric_logger.log_every(loader, 10, header)):
+        for inputs, targets in metric_logger.log_every(loader, 10, header):
             inputs, targets = inputs.to(device, non_blocking=True), targets.to(device, non_blocking=True)
 
             with torch.cuda.amp.autocast(fp16_scaler is not None):
