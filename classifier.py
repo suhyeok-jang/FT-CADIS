@@ -15,14 +15,14 @@ from third_party.lora_vit.lora import LoRA_ViT_timm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-ARCHITECTURES = ["cifar_vit_base", "imagenet_vit_base"]
+ARCHITECTURES = ["cifar10_vit_base", "imagenet_vit_base"]
 
 
 def get_architecture(
     arch: str, ft_method: Optional[str] = None, drop_path_rate: Optional[float] = None
 ) -> torch.nn.Module:
     """Return a neural network"""
-    if arch == "cifar_vit_base":
+    if arch == "cifar10_vit_base":
         model = ViT_base_patch16_224(ft_method, drop_path_rate)
 
     elif arch == "imagenet_vit_base":

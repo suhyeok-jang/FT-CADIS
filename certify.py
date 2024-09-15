@@ -114,7 +114,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--off-the-shelf",
         action="store_true",
-        help="if true, directly use off-the-shelf models",
+        help="if true, directly use off-the-shelf models (no fine-tuned)",
     )
     parser.add_argument("--outfile", type=str, help="output file")
     args = parser.parse_args()

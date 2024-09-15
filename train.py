@@ -74,10 +74,10 @@ parser.add_argument(
     help="standard deviation of Gaussian noise for data augmentation for train",
 )
 parser.add_argument(
-    "--valid_noise_sd",
+    "--test_noise_sd",
     default=0.25,
     type=float,
-    help="standard deviation of Gaussian noise for data augmentation for valid",
+    help="standard deviation of Gaussian noise for data augmentation for test",
 )
 
 #####################
@@ -207,30 +207,20 @@ def main():
 
     if not args.resume:
         args.outdir = f"logs/ft-cadis/{args.ft_method}/{args.dataset}/adv_{args.eps}_{args.num_steps}/lbd_{args.lbd}/num_{args.num_noises}/noise_{args.train_noise_sd}/lr:{args.lr}_eff_batch:{eff_batch_size}"
-        args.outdir = args.outdir + f"/{args.arch}/{args.id}/"
+        args.outdir = args.outdir + f"/{args.id}/"
         if not os.path.exists(args.outdir):
             os.makedirs(args.outdir, exist_ok=True)
     else:
         args.outdir = os.path.dirname(args.load_from)
 
-    pin_memory = args.dataset == "imagenet"
+    pin_memory = (args.dataset == "imagenet")
     train_dataset = get_dataset(args.dataset, "train")
     print(f"Train Data loaded: there are {len(train_dataset)} images.")
 
-    valid_dataset = get_dataset(args.dataset, "test")
-
-    if args.dataset == "cifar10":
-        valid_subset_indices = utils.sample_100_per_class_cifar10(valid_dataset.targets)
-        valid_dataset = Subset(valid_dataset, valid_subset_indices)
-
-    elif args.dataset == "imagenet":
-        valid_subset_indices = utils.sample_5_per_class_imagenet(valid_dataset.targets)
-        valid_dataset = Subset(valid_dataset, valid_subset_indices)
-
-    print(f"Valid Data loaded: there are {len(valid_dataset)} images.")
+    test_dataset = get_dataset(args.dataset, "test")
 
     train_sampler = DistributedSampler(train_dataset, shuffle=True)
-    valid_sampler = DistributedSampler(valid_dataset, shuffle=False)
+    test_sampler = DistributedSampler(test_dataset, shuffle=False)
 
     train_loader = DataLoader(
         train_dataset,
@@ -240,9 +230,9 @@ def main():
         pin_memory=pin_memory,
         drop_last=True,
     )
-    valid_loader = DataLoader(
-        valid_dataset,
-        sampler=valid_sampler,
+    test_loader = DataLoader(
+        test_dataset,
+        sampler=test_sampler,
         batch_size=args.batch,
         num_workers=args.workers,
         pin_memory=pin_memory,
@@ -270,11 +260,11 @@ def main():
         )
 
     # Get the timestep t corresponding to noise level sigma (set the level to twice the original since the range is [-1,1])
-    target_sigmas = {"train": args.train_noise_sd * 2, "valid": args.valid_noise_sd * 2}
-    real_sigmas = {"train": 0, "valid": 0}
-    time_steps = {"train": 0, "valid": 0}
+    target_sigmas = {"train": args.train_noise_sd * 2, "test": args.test_noise_sd * 2}
+    real_sigmas = {"train": 0, "test": 0}
+    time_steps = {"train": 0, "test": 0}
 
-    for key in ["train", "valid"]:
+    for key in ["train", "test"]:
         while real_sigmas[key] < target_sigmas[key]:
             time_steps[key] += 1
             a = denoiser.module.diffusion.sqrt_alphas_cumprod[time_steps[key]]
@@ -282,12 +272,12 @@ def main():
             real_sigmas[key] = b / a
 
     train_time_step = time_steps["train"]
-    valid_time_step = time_steps["valid"]
+    test_time_step = time_steps["test"]
 
     print(f"train_noise level:{args.train_noise_sd}")
-    print(f"valid_noise level:{args.valid_noise_sd}")
+    print(f"test_noise level:{args.test_noise_sd}")
     print(f"train diffusion time step:{train_time_step}")
-    print(f"test diffusion time step:{valid_time_step}")
+    print(f"test diffusion time step:{test_time_step}")
     print("actual lr: %.2e" % args.lr)
     print("accumulate grad iterations: %d" % args.accum_iter)
     print("effective batch size: %d" % eff_batch_size)
@@ -321,7 +311,7 @@ def main():
         len(train_loader),
     )
 
-    print(optimizer)
+    # print(optimizer)
 
     # for mixed precision training
     fp16_scaler = None
@@ -378,20 +368,20 @@ def main():
             writer.add_scalar("learning_rate/back", train_stats["lr_back"], epoch)
             writer.add_scalar("weight_decay", train_stats["wd"], epoch)
 
-        valid_stats = valid(
-            valid_loader,
+        test_stats = test(
+            test_loader,
             classifier,
             denoiser,
-            valid_time_step,
+            test_time_step,
             criterion,
             fp16_scaler,
             device,
         )
 
         if utils.is_main_process():
-            writer.add_scalar("loss/valid", valid_stats["losses"], epoch)
-            writer.add_scalar("accuracy/test@1", valid_stats["top1"], epoch)
-            writer.add_scalar("accuracy/test@5", valid_stats["top5"], epoch)
+            writer.add_scalar("loss/test", test_stats["losses"], epoch)
+            writer.add_scalar("accuracy/test@1", test_stats["top1"], epoch)
+            writer.add_scalar("accuracy/test@5", test_stats["top5"], epoch)
 
         after = time.time()
 
@@ -414,8 +404,8 @@ def main():
                     train_stats["losses_madv"],
                     train_stats["losses_total"],
                     train_stats["top1"],
-                    valid_stats["losses"],
-                    valid_stats["top1"],
+                    test_stats["losses"],
+                    test_stats["top1"],
                 ),
             )
 
@@ -486,7 +476,7 @@ def ft_cadis(
                 logits0_c = classifier(denoised_inputs.detach())
                 logits0_chunk = torch.chunk(logits0_c, args.num_noises, dim=0)
 
-                confidences = logits0_c.argmax(1) == targets_r
+                confidences = (logits0_c.argmax(1) == targets_r)
                 confidences = torch.chunk(confidences, args.num_noises, dim=0)
                 confidences = torch.stack(confidences, dim=0)
                 confidences = confidences.permute(1, 0).contiguous()
@@ -697,9 +687,9 @@ class PGD(object):
         return torch.chunk(eta, m, dim=0)
 
 
-def valid(loader, classifier, denoiser, time_step, criterion, fp16_scaler, device):
+def test(loader, classifier, denoiser, time_step, criterion, fp16_scaler, device):
     metric_logger = utils.MetricLogger(delimiter="  ")
-    header = "Validation:"
+    header = "Test:"
 
     # Switch to evaluation mode
     torch.cuda.empty_cache()

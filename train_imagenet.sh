@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
-DATASET=""
-ARCH=""
-FT_METHOD=""
 GPUS=4
 NOISE=1.0
-NUM_NOISES=4
 LBD=2.0
-EPS=64
-BLR=0.001
+BLR=0.0004
 BATCH=32
-ACCUM_ITER=1
-EPS_DOUBLE=false
+ACCUM_ITER=4
 RESUME=false
 LOAD_FROM=""
 
@@ -56,23 +50,23 @@ while [[ $# -gt 0 ]]; do
     ;;
     --eps)
     EPS="$2"
-    shift # past argument
-    shift # past value
+    shift 
+    shift
     ;;
     --blr)
     BLR="$2"
-    shift # past argument
-    shift # past value
+    shift 
+    shift 
     ;;
     --batch)
     BATCH="$2"
-    shift # past argument
-    shift # past value
+    shift 
+    shift 
     ;;
     --accum_iter)
     ACCUM_ITER="$2"
-    shift # past argument
-    shift # past value
+    shift
+    shift 
     ;;
     --eps_double) 
     EPS_DOUBLE=true
@@ -111,15 +105,15 @@ COMMAND="python3 -m torch.distributed.launch --nnodes ${TOTAL_NODES:-1} \
     --master_addr=${MASTER_ADDR:-127.0.0.1} \
     --master_port=${MASTER_PORT:-$MASTER_PORT} \
     train.py \
-    --id $ID --dataset $DATASET \
-    --arch $ARCH \
-    --ft_method $FT_METHOD \
-    --weight_decay 0.04 --weight_decay_end 0.4 \
-    --layer_decay 0.65 --drop_path 0.0 \
+    --id $ID --dataset imagenet \
+    --arch imagenet_vit_base \
+    --ft_method lora \
+    --weight_decay 0.02 --weight_decay_end 0.2 \
+    --layer_decay 0.8 --drop_path 0.0 \
     --blr $BLR --batch $BATCH --accum_iter $ACCUM_ITER \
-    --warmup_epochs 2 --epochs 20 --warmup_eps 10 \
-    --eps $EPS --num-steps 1 \
-    --train_noise_sd $NOISE --valid_noise_sd $NOISE --num_noises $NUM_NOISES --lbd $LBD \
+    --warmup_epochs 1 --epochs 10 \
+    --eps 64 --num-steps 1 \
+    --train_noise_sd $NOISE --test_noise_sd $NOISE --num_noises 2 --lbd $LBD \
     --clip_grad 1.0 --use_fp16 true --warm_start"
 
 if [ "$EPS_DOUBLE" = true ]; then
