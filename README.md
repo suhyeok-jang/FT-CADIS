@@ -15,6 +15,14 @@ bash setup_environment.sh
 ```
 
 ## Training
+We offer an example command line input to execute our proposed training scheme for off-the-shelf classifiers.
+```
+# CIFAR-10 (Multi-GPU)
+bash train_cifar10.sh --ngpus [NUM of GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0
+
+#ImageNet (Multi-GPU)
+bash train_imagenet.sh --ngpus [NUM of GPUS] --noise 1.00 --blr 4e-4 --batch 16 --accum_iter 4 --lbd 2.0
+``` 
 
 ## Certification
 
