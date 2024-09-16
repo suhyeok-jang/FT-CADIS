@@ -20,7 +20,7 @@ We offer an example command line input to run `train.py` on CIFAR-10 and ImageNe
 # CIFAR-10 (Multi-GPU)
 bash train_cifar10.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0
 
-#ImageNet (Multi-GPU)
+# ImageNet (Multi-GPU)
 bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 --accum_iter 4 --lbd 2.0
 ``` 
 - The default base learning rate `blr` and coefficient for masked adversarial loss `lbd` are provided in [our paper](https://openreview.net/pdf?id=99GovbuMcP).
@@ -33,5 +33,16 @@ bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 
     ```
 
 ## Certification
+We provide a sample command to perform certification on CIFAR-10 and ImageNet based on [Cohen et al. (2019)](https://github.com/locuslab/smoothing?tab=readme-ov-file)
+```
+# CIFAR-10 (Single-GPU)
+python certify.py --seed 0 --dataset cifar10 --sigma 0.50 --skip 1 --N0 100 --N 100000 --batch_size 400 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
+
+# ImageNet (Multi-GPU)
+python certify.py -seed 0 --dataset imagenet --sigma 0.50 --skip 1 --N0 100 --N 10000 --batch_size 32 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
+```
+
+## Others
+The `analyze.py` includes various helpful classes and functions for analyzing and visualizing certification results, outputting it in LaTeX, table, or graph format.
 
 ## Acknowledgments
