@@ -15,7 +15,7 @@ bash setup_environment.sh
 ```
 
 ## Training
-We offer an example command line input to execute our proposed training scheme for off-the-shelf classifiers.
+We offer an example command line input to run `train.py` on CIFAR-10 and ImageNet.
 ```
 # CIFAR-10 (Multi-GPU)
 bash train_cifar10.sh --ngpus [NUM of GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0
@@ -23,6 +23,10 @@ bash train_cifar10.sh --ngpus [NUM of GPUS] --noise 1.00 --blr 1e-4 --batch 32 -
 #ImageNet (Multi-GPU)
 bash train_imagenet.sh --ngpus [NUM of GPUS] --noise 1.00 --blr 4e-4 --batch 16 --accum_iter 4 --lbd 2.0
 ``` 
+- The default base learning rate `blr` and coefficient for masked adversarial loss `lbd` are provided in [our paper](https://openreview.net/pdf?id=99GovbuMcP).
+- Here the efffective batch size is 128:
+    - It is calucated as ngpus x `batch` per gpu x `accum_iter` // `num_noises`
+    - Increase `accum_iter` to maintain the effective batch size if VRAM or the number of GPUs is limited.
 
 ## Certification
 
