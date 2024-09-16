@@ -13,21 +13,6 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-    --dataset)
-    DATASET="$2"
-    shift 
-    shift 
-    ;;
-    --arch)
-    ARCH="$2"
-    shift 
-    shift 
-    ;;
-    --ft_method)
-    FT_METHOD="$2"
-    shift 
-    shift 
-    ;;
     --ngpus)
     GPUS="$2"
     shift 
@@ -70,6 +55,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     --eps_double) 
     EPS_DOUBLE=true
+    shift 
+    ;;
+    --warmup_eps) 
+    WARMUP_EPS=true
     shift 
     ;;
     --resume) 
@@ -118,6 +107,7 @@ COMMAND="python3 -m torch.distributed.launch --nnodes ${TOTAL_NODES:-1} \
 
 if [ "$EPS_DOUBLE" = true ]; then
     COMMAND+=" --eps_double"
+    COMMAND+=" --warmup_eps $WARMUP_EPS"
 fi
 
 if [ "$RESUME" = true ]; then

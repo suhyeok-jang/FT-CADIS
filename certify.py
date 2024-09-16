@@ -8,19 +8,16 @@ import os
 import argparse
 import time
 import datetime
+import warnings
+warnings.filterwarnings("ignore")
 from tqdm import tqdm
 from torchvision import transforms, datasets
 from torch.utils.data import Subset
-
-import warnings
-
-warnings.filterwarnings("ignore")
 
 from third_party.smoothed_classifier.core import Smooth
 from architecture import CIFAR10_Denoise_And_Classify, ImageNet_Denoise_And_Classify
 from datasets import get_dataset, DATASETS
 from utils import utils
-
 
 def main(args):
     utils.fix_random_seeds(args.seed)
@@ -45,7 +42,7 @@ def main(args):
         subset_indices = utils.sample_1_per_class_imagenet(dataset.targets)
         dataset = Subset(dataset, subset_indices)
 
-    # Get the timestep t corresponding to noise level sigma x 2 <- [-1,1]
+    # Get the timestep t corresponding to sigma (noise level) x 2 (Since the image range [-1,1] differs from the typical range [0,1])
     target_sigma = args.sigma * 2
     real_sigma = 0
     t = 0

@@ -5,15 +5,12 @@
 from typing import *
 import math
 import os
-
 import numpy as np
 import matplotlib
-
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 from prettytable import PrettyTable
-
 
 class Accuracy(object):
     def at_radii(self, radii: np.ndarray):

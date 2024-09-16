@@ -5,7 +5,6 @@
 # written by Carlini et al.
 
 from typing import Optional
-
 import torch
 import torch.nn as nn
 import timm

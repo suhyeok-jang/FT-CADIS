@@ -4,19 +4,16 @@
 
 import os
 from typing import *
-
 import torch
 from torchvision import transforms, datasets
 from torch.utils.data import Dataset
-
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # set this environment variable to the location of your imagenet directory if you want to read ImageNet data.
 # make sure your val directory is preprocessed to look like the train directory, e.g. by running this script
 # https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
-# os.environ["IMAGENET_LOC_ENV"] = "IMAGENET_DIR"
-os.environ["IMAGENET_LOC_ENV"] = "/home/jsh/ImageNet"
+os.environ["IMAGENET_LOC_ENV"] = "IMAGENET_DIR"
 CIFAR10_LOC = "./data/cifar10"
 
 DATASETS = ["cifar10", "imagenet"]

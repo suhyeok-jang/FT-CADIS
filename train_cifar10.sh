@@ -13,21 +13,6 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-    --dataset)
-    DATASET="$2"
-    shift 
-    shift 
-    ;;
-    --arch)
-    ARCH="$2"
-    shift 
-    shift 
-    ;;
-    --ft_method)
-    FT_METHOD="$2"
-    shift 
-    shift 
-    ;;
     --ngpus)
     GPUS="$2"
     shift 
@@ -66,10 +51,6 @@ while [[ $# -gt 0 ]]; do
     --accum_iter)
     ACCUM_ITER="$2"
     shift 
-    shift 
-    ;;
-    --eps_double) 
-    EPS_DOUBLE=true
     shift 
     ;;
     --resume) 
@@ -116,9 +97,6 @@ COMMAND="python3 -m torch.distributed.launch --nnodes ${TOTAL_NODES:-1} \
     --train_noise_sd $NOISE --test_noise_sd $NOISE --num_noises 4 --lbd $LBD \
     --clip_grad 0.3 --use_fp16 true --warm_start"
 
-if [ "$EPS_DOUBLE" = true ]; then
-    COMMAND+=" --eps_double"
-fi
 
 if [ "$RESUME" = true ]; then
     COMMAND+=" --resume"

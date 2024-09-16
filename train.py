@@ -101,13 +101,11 @@ parser.add_argument(
     help="number of steps of PGD (Projected Gradient Descent) attack",
 )
 parser.add_argument("--lbd", default=1.0, type=float, help="strength of the contribution of L^MAdv")
-
 parser.add_argument(
     "--eps_double",
     action="store_true",
     help="if true, attack radius (epsilon) is doubled after warmup",
 )
-
 parser.add_argument(
     "--warmup_eps",
     default=10000,
@@ -259,7 +257,7 @@ def main():
             ImageNet_Denoiser(), device_ids=[args.gpu], find_unused_parameters=False
         )
 
-    # Get the timestep t corresponding to noise level sigma (set the level to twice the original since the range is [-1,1])
+    # Get the timestep t corresponding to sigma (set the noise level to twice the original since the range is [-1,1])
     target_sigmas = {"train": args.train_noise_sd * 2, "test": args.test_noise_sd * 2}
     real_sigmas = {"train": 0, "test": 0}
     time_steps = {"train": 0, "test": 0}
@@ -358,6 +356,7 @@ def main():
             attacker,
             device,
         )
+        
         if utils.is_main_process():
             writer.add_scalar("loss/sce", train_stats["losses_sce"], epoch)
             writer.add_scalar("loss/madv", train_stats["losses_madv"], epoch)
@@ -529,7 +528,7 @@ def ft_cadis(
 
                 loss_madv, _ = torch.cat(loss_madv, dim=1).max(1)
 
-                loss_madv = args.lbd * loss_madv * mask_adv
+                loss_madv = args.lbd * mask_adv * loss_madv
 
                 # Step 7: Compute the Total Loss
                 loss = (loss_sce + loss_madv).mean()
@@ -673,6 +672,7 @@ class PGD(object):
             # Gradient ascent -> Maximize kl loss
             eta = eta + alpha * grad
             diff = eta - eta0
+            # Projection based on the l2-norm
             diff = diff.renorm(p=2, dim=0, maxnorm=self.max_norm)
 
             eta = eta0 + diff

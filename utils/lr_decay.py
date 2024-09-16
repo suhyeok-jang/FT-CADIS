@@ -81,7 +81,7 @@ def param_groups_lora_lrd(model, weight_decay=0.05, no_weight_decay_list=None, l
         if p.ndim == 1 or n.endswith(".bias") or n in no_weight_decay_list:
             g_decay = "no_decay"
             this_decay = 0.0
-        else:  # Lora rank matrix weight, Fc layer weight
+        else:  # Lora rank matrix weight, FC layer weight
             g_decay = "decay"
             this_decay = weight_decay
 

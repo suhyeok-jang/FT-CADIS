@@ -168,7 +168,6 @@ class LoRA_ViT_huggingface(nn.Module):
                 print("this fc weight is not for this model")
 
     def reset_parameters(self) -> None:
-        # 훈련 초기때 BA가 0이되게끔 설정
         for w_A in self.w_As:
             nn.init.kaiming_uniform_(w_A.weight, a=math.sqrt(5))
         for w_B in self.w_Bs:
@@ -509,13 +508,6 @@ class LoRA_ViT_timm(nn.Module):
     def forward(self, x: Tensor) -> Tensor:
         return self.lora_vit(x)
 
-    # def forward(self, x: Tensor) -> Tensor:
-    #     x = rearrange(x, "b s c h w -> (b s) c h w", s=30)
-    #     x = self.lora_vit(x)
-    #     x = rearrange(x, "(b s) d -> b (s d)", s=30)
-    #     x = self.proj_3d(x)
-    #     return x
-
 
 class _LoRA_qkv_timm_x(nn.Module):
     """In timm it is implemented as
@@ -654,17 +646,3 @@ class LoRA_ViT_timm_x(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self.lora_vit(x)
-
-
-if __name__ == "__main__":  # Debug
-    img = torch.randn(2, 3, 224, 224)
-    model = timm.create_model("vit_base_patch16_224", pretrained=True)
-    lora_vit = LoRA_ViT_timm(vit_model=model, r=4, num_classes=10)
-    pred = lora_vit(img)
-    print(pred.shape)
-
-    img = torch.randn(2 * 20, 3, 224, 224)
-    model = timm.create_model("vit_base_patch16_224", pretrained=True)
-    lora_vit = LoRA_ViT_timm(vit_model=model, r=4, num_classes=10)
-    pred = lora_vit.forward3D(img)
-    print(pred.shape)

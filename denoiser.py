@@ -103,14 +103,16 @@ class CIFAR10_Denoiser(nn.Module):
 
         return clip_image, denoised_imgs
 
-    # noise-and-denoise procedure
+    # Noise-and-Denoise Procedure
     def denoise(self, x_start, t, multistep=False):
         t_batch = torch.tensor([t] * len(x_start)).cuda()
 
         noise = torch.randn_like(x_start)
 
+        # Forward process
         x_t_start = self.diffusion.q_sample(x_start=x_start, t=t_batch, noise=noise)
 
+        # Reverse process
         with torch.no_grad():
             if multistep:
                 out = x_t_start
@@ -143,14 +145,16 @@ class ImageNet_Denoiser(nn.Module):
 
         return clip_image, denoised_imgs
 
-    # noise-and-denoise procedure
+    # Noise-and-Denoise Procedure
     def denoise(self, x_start, t, multistep=False):
         t_batch = torch.tensor([t] * len(x_start)).cuda()
 
         noise = torch.randn_like(x_start)
 
+        # Forward process
         x_t_start = self.diffusion.q_sample(x_start=x_start, t=t_batch, noise=noise)
 
+        # Reverse process
         with torch.no_grad():
             if multistep:
                 out = x_t_start

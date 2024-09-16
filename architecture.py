@@ -208,7 +208,6 @@ class ImageNet_Denoise_And_Classify(nn.Module):
                     t_batch = torch.tensor([i] * len(x_start)).cuda()
                     out = self.diffusion.p_sample(self.model, out, t_batch, clip_denoised=True)["sample"]
             else:
-                # backward step
                 out = self.diffusion.p_sample(self.model, x_t_start, t_batch, clip_denoised=True)["pred_xstart"]
 
         return out

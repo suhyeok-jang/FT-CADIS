@@ -4,9 +4,6 @@ import numpy as np
 from math import ceil
 from statsmodels.stats.proportion import proportion_confint
 
-torch.manual_seed(0)
-
-
 # Adapted from https://github.com/locuslab/smoothing/blob/master/code/core.py
 class Smooth(object):
     """A smoothed classifier g"""
