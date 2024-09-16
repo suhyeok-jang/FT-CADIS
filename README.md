@@ -14,8 +14,8 @@ conda activate ft-cadis
 bash setup_environment.sh
 ```
 Additionally, we utilize the same denoiser as [Carlini et al. (2023)](https://arxiv.org/abs/2206.10550). Please make sure to download the appropriate model checkpoints for each dataset from the respective repo:
-[CIFAR-10](https://github.com/openai/improved-diffusion): Unconditional CIFAR-10 with `L_hybrid` objective and cosine noise schedule
-[ImageNet](https://github.com/openai/guided-diffusion): 256x256 diffusion (not class conditional)
+- [CIFAR-10](https://github.com/openai/improved-diffusion): Unconditional CIFAR-10 with `L_hybrid` objective and cosine noise schedule
+- [ImageNet](https://github.com/openai/guided-diffusion): 256x256 diffusion (not class conditional)
 
 ## Training
 We offer an example command line input to run `train.py` on CIFAR-10 and ImageNet.
