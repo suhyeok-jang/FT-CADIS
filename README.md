@@ -13,6 +13,9 @@ conda create -n ft-cadis python=3.8.19 -y
 conda activate ft-cadis
 bash setup_environment.sh
 ```
+Additionally, we utilize the same denoiser as [Carlini et al. (2023)](https://arxiv.org/abs/2206.10550). Please make sure to download the appropriate model checkpoints for each dataset from the respective repo:
+[CIFAR-10](https://github.com/openai/improved-diffusion): Unconditional CIFAR-10 with `L_hybrid` objective and cosine noise schedule
+[ImageNet](https://github.com/openai/guided-diffusion): 256x256 diffusion (not class conditional)
 
 ## Training
 We offer an example command line input to run `train.py` on CIFAR-10 and ImageNet.
@@ -47,3 +50,4 @@ python certify.py -seed 0 --dataset imagenet --sigma 0.50 --skip 1 --N0 100 --N 
 The `analyze.py` includes various helpful classes and functions for analyzing and visualizing certification results, outputting it in LaTeX, table, or graph format.
 
 ## Acknowledgments
+This repository is built on top of [Diffusion Denoised](https://github.com/ethz-spylab/diffusion_denoised_smoothing), [Multi-scale Denoised](https://github.com/jh-jeong/smoothing-multiscale) and [CAT-RS](https://github.com/alinlab/smoothing-catrs).
