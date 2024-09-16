@@ -29,7 +29,8 @@ bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 
     - Increase `accum_iter` to maintain the effective batch size if VRAM or the number of GPUs is limited.
 - To resume fine-tuning from a specific checkpoint, use the `resume` and `load_from` arguments.
     ```
-    bash train_cifar10.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0 --resume --load_from [CHECKPOINT LOCATION]
+    bash train_cifar10.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0 \
+    --resume --load_from [CHECKPOINT LOCATION]
     ```
 
 ## Certification
