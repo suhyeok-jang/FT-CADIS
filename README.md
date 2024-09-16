@@ -14,7 +14,7 @@ conda activate ft-cadis
 bash setup_environment.sh
 ```
 Additionally, we utilize the same denoiser as [Carlini et al. (2023)](https://arxiv.org/abs/2206.10550). Please make sure to download the appropriate model checkpoints for each dataset from the respective repo:
-- [CIFAR-10](https://github.com/openai/improved-diffusion): Unconditional CIFAR-10 with `L_hybrid` objective and cosine noise schedule
+- [CIFAR-10](https://github.com/openai/improved-diffusion): Unconditional diffusion with `L_hybrid` objective and cosine noise schedule
 - [ImageNet](https://github.com/openai/guided-diffusion): 256x256 diffusion (not class conditional)
 
 ## Training
@@ -37,7 +37,7 @@ bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 
     ```
 
 ## Certification
-We provide a sample command to perform certification on CIFAR-10 and ImageNet based on [Cohen et al. (2019)](https://github.com/locuslab/smoothing?tab=readme-ov-file)
+We provide a sample command to perform certification on CIFAR-10 and ImageNet based on [Cohen et al. (2019)](https://github.com/locuslab/smoothing?tab=readme-ov-file).
 ```
 # CIFAR-10 (Single-GPU)
 python certify.py --seed 0 --dataset cifar10 --sigma 0.50 --skip 1 --N0 100 --N 100000 --batch_size 400 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
