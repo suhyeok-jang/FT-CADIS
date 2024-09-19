@@ -18,7 +18,6 @@ CIFAR10_LOC = "./data/cifar10"
 
 DATASETS = ["cifar10", "imagenet"]
 
-
 def get_dataset(dataset: str, split: str) -> Dataset:
     """Return the dataset as a PyTorch Dataset object"""
     if dataset == "cifar10":

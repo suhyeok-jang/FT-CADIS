@@ -289,12 +289,23 @@ def main():
             skip_weight_decay_list = classifier.module.classifier.lora_vit.no_weight_decay()
             skip_weight_decay_list = {"classifier.lora_vit." + element for element in skip_weight_decay_list}
 
-        param_groups = lrd.param_groups_lora_lrd(
-            classifier.module,
-            args.weight_decay,
-            skip_weight_decay_list,
-            args.layer_decay,
-        )
+            param_groups = lrd.param_groups_lora_lrd(
+                classifier.module,
+                args.weight_decay,
+                skip_weight_decay_list,
+                args.layer_decay,
+            )
+        elif args.ft_method == "full-ft":
+            skip_weight_decay_list = classifier.module.classifier.no_weight_decay()
+            skip_weight_decay_list = {"classifier." + element for element in skip_weight_decay_list}
+            
+            param_groups = lrd.param_groups_lrd_timm(
+                classifier.module,
+                args.weight_decay,
+                skip_weight_decay_list,
+                args.layer_decay,
+            )
+            
 
     optimizer = torch.optim.AdamW(param_groups, lr=args.lr)
     criterion = CrossEntropyLoss().to(device)
@@ -569,14 +580,18 @@ def ft_cadis(
         metric_logger.update(top1=acc1.item())
         metric_logger.update(top5=acc5.item())
 
-        if args.arch == "cifar_vit_base":
+        if args.arch == "cifar10_vit_base":
             metric_logger.update(lr_front=optimizer.param_groups[2]["lr"])
             metric_logger.update(lr_back=optimizer.param_groups[27]["lr"])
             metric_logger.update(wd=optimizer.param_groups[2]["weight_decay"])
-        elif args.dataset == "imagenet_vit_base":
+        elif args.arch == "imagenet_vit_base" and args.ft_method == "lora":
             metric_logger.update(lr_front=optimizer.param_groups[0]["lr"])
             metric_logger.update(lr_back=optimizer.param_groups[13]["lr"])
             metric_logger.update(wd=optimizer.param_groups[0]["weight_decay"])
+        elif args.arch == "imagenet_vit_base" and args.ft_method == "full-ft":
+            metric_logger.update(lr_front=optimizer.param_groups[1]["lr"])
+            metric_logger.update(lr_back=optimizer.param_groups[27]["lr"])
+            metric_logger.update(wd=optimizer.param_groups[1]["weight_decay"])
 
     metric_logger.synchronize_between_processes()
     torch.cuda.empty_cache()

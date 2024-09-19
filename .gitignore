@@ -140,4 +140,11 @@ data/
 models/
 test/
 checkpoint/
+*.ipynb
+wandb/
 
+#Variants
+train_naive.py
+train_wandb.py
+train_imagenet_full-ft.sh
+train_cifar10_naive.sh

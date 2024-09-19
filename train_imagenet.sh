@@ -43,6 +43,21 @@ while [[ $# -gt 0 ]]; do
     shift 
     shift 
     ;;
+        --weight_decay)
+    WEIGHT_DECAY="$2"
+    shift 
+    shift 
+    ;;
+    --weight_decay_end)
+    WEIGHT_DECAY_END="$2"
+    shift 
+    shift 
+    ;;
+    --layer_decay)
+    LAYER_DECAY="$2"
+    shift 
+    shift 
+    ;;
     --batch)
     BATCH="$2"
     shift 
@@ -58,7 +73,7 @@ while [[ $# -gt 0 ]]; do
     shift 
     ;;
     --warmup_eps) 
-    WARMUP_EPS=true
+    WARMUP_EPS="$2"
     shift 
     ;;
     --resume) 
@@ -97,8 +112,8 @@ COMMAND="python3 -m torch.distributed.launch --nnodes ${TOTAL_NODES:-1} \
     --id $ID --dataset imagenet \
     --arch imagenet_vit_base \
     --ft_method lora \
-    --weight_decay 0.02 --weight_decay_end 0.2 \
-    --layer_decay 0.8 --drop_path 0.0 \
+    --weight_decay $WEIGHT_DECAY --weight_decay_end $WEIGHT_DECAY_END \
+    --layer_decay $LAYER_DECAY --drop_path 0.0 \
     --blr $BLR --batch $BATCH --accum_iter $ACCUM_ITER \
     --warmup_epochs 1 --epochs 10 \
     --eps 64 --num-steps 1 \

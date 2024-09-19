@@ -62,6 +62,14 @@ while [[ $# -gt 0 ]]; do
     shift 
     shift
     ;;
+    --eps_double)
+    EPS_DOUBLE=true
+    shift
+    ;;
+    --warmup_eps)
+    WARMUP_EPS="$2"
+    shift
+    shift
     *)
     echo "Unknown option $key"
     exit 1
@@ -92,11 +100,16 @@ COMMAND="python3 -m torch.distributed.launch --nnodes ${TOTAL_NODES:-1} \
     --weight_decay 0.04 --weight_decay_end 0.4 \
     --layer_decay 0.65 --drop_path 0.2 \
     --blr $BLR --batch $BATCH --accum_iter $ACCUM_ITER \
-    --warmup_epochs 3 --epochs 30 --warmup_eps 10 --eps_double\
+    --warmup_epochs 3 --epochs 30 \
     --eps 64 --num-steps 4 \
     --train_noise_sd $NOISE --test_noise_sd $NOISE --num_noises 4 --lbd $LBD \
     --clip_grad 0.3 --use_fp16 true --warm_start"
 
+
+if [ "$EPS_DOUBLE" = true ]; then
+    COMMAND+=" --eps_double"
+    COMMAND+=" --warmup_eps $WARMUP_EPS"
+fi
 
 if [ "$RESUME" = true ]; then
     COMMAND+=" --resume"

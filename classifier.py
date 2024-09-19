@@ -40,6 +40,12 @@ class ViT_base_patch16_224(nn.Module):
         classifier = AutoModelForImageClassification.from_pretrained(
             "aaraki/vit-base-patch16-224-in21k-finetuned-cifar10"
         )
+        
+        if drop_path_rate is not None:
+            dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]  # Stochastic depth decay rule
+            # Apply dropout rates for each block layer
+            for i, layer in enumerate(classifier.vit.encoder.layer):
+                layer.attention.attention.dropout.p = dpr[i]
 
         if ft_method is not None:
             if ft_method == "full-ft":
@@ -47,13 +53,7 @@ class ViT_base_patch16_224(nn.Module):
                     param.requires_grad = True
             else:
                 raise NotImplementedError
-
-        if drop_path_rate is not None:
-            dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]  # Stochastic depth decay rule
-            # Apply dropout rates for each block layer
-            for i, layer in enumerate(classifier.vit.encoder.layer):
-                layer.attention.attention.dropout.p = dpr[i]
-
+                
         classifier.cuda()
         self.classifier = classifier
 
