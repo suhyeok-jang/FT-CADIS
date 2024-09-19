@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
     shift 
     shift 
     ;;
-        --weight_decay)
+    --weight_decay)
     WEIGHT_DECAY="$2"
     shift 
     shift 
@@ -70,15 +70,18 @@ while [[ $# -gt 0 ]]; do
     ;;
     --eps_double) 
     EPS_DOUBLE=true
+    shift
     shift 
     ;;
     --warmup_eps) 
     WARMUP_EPS="$2"
     shift 
+    shift
     ;;
     --resume) 
     RESUME=true
     shift 
+    shift
     ;;
     --load_from) 
     LOAD_FROM="$2"

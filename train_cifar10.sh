@@ -55,6 +55,7 @@ while [[ $# -gt 0 ]]; do
     ;;
     --resume) 
     RESUME=true
+    shift
     shift 
     ;;
     --load_from) 
@@ -65,11 +66,13 @@ while [[ $# -gt 0 ]]; do
     --eps_double)
     EPS_DOUBLE=true
     shift
+    shift
     ;;
     --warmup_eps)
     WARMUP_EPS="$2"
     shift
     shift
+    ;;
     *)
     echo "Unknown option $key"
     exit 1
