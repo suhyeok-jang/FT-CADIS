@@ -44,7 +44,7 @@ We provide a sample command to perform certification on CIFAR-10 and ImageNet ba
 python certify.py --seed 0 --dataset cifar10 --sigma 0.50 --skip 1 --N0 100 --N 100000 --batch_size 400 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
 
 # ImageNet (Multi-GPU)
-python certify.py -seed 0 --dataset imagenet --sigma 0.50 --skip 1 --N0 100 --N 10000 --batch_size 32 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
+python certify.py --seed 0 --dataset imagenet --sigma 0.50 --skip 1 --N0 100 --N 10000 --batch_size 32 --finetuned_path [CHECKPOINT LOCATION] --outfile [OUTPUT LOCATION]
 ```
 
 ## Others
