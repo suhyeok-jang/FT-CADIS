@@ -24,8 +24,8 @@ We offer an example command line input to run `train.py` on CIFAR-10 and ImageNe
 bash train_cifar10.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 1e-4 --batch 32 --accum_iter 4 --lbd 4.0
 
 # ImageNet (Multi-GPU)
-bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 --accum_iter 4 --lbd 2.0 
-\ --weight_decay 0.01 --weight_decay_end 0.1 --layer_decay 0.9
+bash train_imagenet.sh --ngpus [NUM OF GPUS] --noise 1.00 --blr 4e-4 --batch 16 --accum_iter 4 --lbd 2.0 \ 
+--weight_decay 0.01 --weight_decay_end 0.1 --layer_decay 0.9
 ``` 
 - The default base learning rate `blr` and coefficient for masked adversarial loss `lbd` are provided in [our paper](https://openreview.net/pdf?id=99GovbuMcP).
 - Here the efffective batch size is 128:
