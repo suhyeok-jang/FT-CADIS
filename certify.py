@@ -83,7 +83,7 @@ def main(args):
         after_time = time.time()
 
         correct_num += int(prediction == label)
-        correct = prediction == label
+        correct = (prediction == label)
 
         time_elapsed = str(datetime.timedelta(seconds=(after_time - before_time)))
         total_num += 1
@@ -94,7 +94,7 @@ def main(args):
             flush=True,
         )
 
-    print("sigma %.2f accuracy of smoothed classifier %.4f " % (args.sigma, correct / float(total_num)))
+    print("sigma %.2f accuracy of smoothed classifier %.4f " % (args.sigma, correct_num / float(total_num)))
 
 
 if __name__ == "__main__":

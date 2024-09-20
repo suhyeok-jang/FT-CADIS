@@ -164,7 +164,8 @@ class ImageNet_Denoise_And_Classify(nn.Module):
         classifier = timm.models.create_model("vit_base_patch16_clip_384.laion2b_ft_in12k_in1k", pretrained=True)
 
         if vit_checkpoint is not None:
-            classifier = LoRA_ViT_timm(vit_model=classifier, r=4, alpha=4, num_classes=1000)
+            if "lora" in vit_checkpoint:
+                classifier = LoRA_ViT_timm(vit_model=classifier, r=4, alpha=4, num_classes=1000)
             checkpoint = torch.load(vit_checkpoint, map_location="cpu")
             checkpoint_revised = {k.replace("classifier.", ""): v for k, v in checkpoint["state_dict"].items()}
             classifier.load_state_dict(checkpoint_revised)
