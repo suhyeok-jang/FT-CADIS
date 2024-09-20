@@ -329,6 +329,12 @@ def main():
 
     if utils.is_main_process():  # Tensorboard Configuration
         writer = SummaryWriter(args.outdir)
+        logfilename = os.path.join(args.outdir, "log.txt")
+
+        init_logfile(
+            logfilename,
+            "epoch\ttime\tlr_front\tlr_back\twd\ttrain loss_sce\ttrain loss_madv\ttrain loss_total\ttrain acc\ttest loss\ttest acc",
+        )
 
     starting_epoch = 0
 
@@ -396,12 +402,6 @@ def main():
         after = time.time()
 
         if utils.is_main_process():
-            logfilename = os.path.join(args.outdir, "log.txt")
-
-            init_logfile(
-                logfilename,
-                "epoch\ttime\tlr_front\tlr_back\twd\ttrain loss_sce\ttrain loss_madv\ttrain loss_total\ttrain acc\ttest loss\ttest acc",
-            )
             log(
                 logfilename,
                 "{}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}\t{:.3}".format(
