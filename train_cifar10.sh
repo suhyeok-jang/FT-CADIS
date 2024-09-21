@@ -55,7 +55,6 @@ while [[ $# -gt 0 ]]; do
     ;;
     --resume) 
     RESUME=true
-    shift
     shift 
     ;;
     --load_from) 
@@ -65,7 +64,6 @@ while [[ $# -gt 0 ]]; do
     ;;
     --eps_double)
     EPS_DOUBLE=true
-    shift
     shift
     ;;
     --warmup_eps)
