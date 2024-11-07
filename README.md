@@ -1,6 +1,6 @@
 # Confidence-aware Denoised Fine-tuning of Off-the-shelf Models for Certified Robustness
 
-This repository contains code for the paper "Confidence-aware Denoised Fine-tuning of Off-the-shelf Models for Certified Robustness". 
+This repository contains code for the paper <b>"Confidence-aware Denoised Fine-tuning of Off-the-shelf Models for Certified Robustness" (TMLR 2024)</b> by Suhyeok Jang, Seojin Kim, Jinwoo Shin and Jongheon Jeong. 
 
 <b>TL;DR:</b>  *Enhancing the certified robustness of the smoothed classifier by fine-tuning the off-the-shelf model on selectively chosen denoised images.* 
 
