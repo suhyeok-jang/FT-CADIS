@@ -52,3 +52,17 @@ The `analyze.py` includes various helpful classes and functions for analyzing an
 
 ## Acknowledgments
 This repository is built on top of [Diffusion Denoised](https://github.com/ethz-spylab/diffusion_denoised_smoothing), [Multi-scale Denoised](https://github.com/jh-jeong/smoothing-multiscale) and [CAT-RS](https://github.com/alinlab/smoothing-catrs).
+
+## Citation
+```
+@article{
+jang2024confidenceaware,
+title={Confidence-aware Denoised Fine-tuning of Off-the-shelf Models for Certified Robustness},
+author={Suhyeok Jang and Seojin Kim and Jinwoo Shin and Jongheon Jeong},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2024},
+url={https://openreview.net/forum?id=99GovbuMcP},
+note={}
+}
+```
