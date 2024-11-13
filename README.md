@@ -55,7 +55,7 @@ This repository is built on top of [Diffusion Denoised](https://github.com/ethz-
 
 ## Citation
 If you find this repository helpful, please consider giving it a citation.
-```
+```bibtex
 @article{
 jang2024confidenceaware,
 title={Confidence-aware Denoised Fine-tuning of Off-the-shelf Models for Certified Robustness},
