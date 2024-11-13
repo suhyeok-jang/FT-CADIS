@@ -54,6 +54,7 @@ The `analyze.py` includes various helpful classes and functions for analyzing an
 This repository is built on top of [Diffusion Denoised](https://github.com/ethz-spylab/diffusion_denoised_smoothing), [Multi-scale Denoised](https://github.com/jh-jeong/smoothing-multiscale) and [CAT-RS](https://github.com/alinlab/smoothing-catrs).
 
 ## Citation
+If you find this repository helpful, please consider giving it a citation.
 ```
 @article{
 jang2024confidenceaware,
